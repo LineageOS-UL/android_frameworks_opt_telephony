@@ -19,16 +19,12 @@ package com.android.internal.telephony.security;
 import static android.telephony.CellularIdentifierDisclosure.CELLULAR_IDENTIFIER_IMEI;
 import static android.telephony.CellularIdentifierDisclosure.CELLULAR_IDENTIFIER_IMSI;
 import static android.telephony.CellularIdentifierDisclosure.NAS_PROTOCOL_MESSAGE_ATTACH_REQUEST;
-import static android.telephony.CellularIdentifierDisclosure.NAS_PROTOCOL_MESSAGE_IDENTITY_RESPONSE;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
-import android.hardware.radio.network.CellularIdentifier;
-import android.hardware.radio.network.NasProtocolMessage;
 import android.os.Parcel;
-
-import com.android.internal.telephony.RILUtils;
+import android.telephony.CellularIdentifierDisclosure;
 
 import org.junit.Test;
 
@@ -36,38 +32,22 @@ public class CellularIdentifierDisclosureTest {
 
     @Test
     public void testEqualsAndHash() {
-        android.telephony.CellularIdentifierDisclosure disclosure =
-                new android.telephony.CellularIdentifierDisclosure(
-                        NAS_PROTOCOL_MESSAGE_ATTACH_REQUEST,
-                        CELLULAR_IDENTIFIER_IMSI,
-                        "001001",
-                        false);
+        CellularIdentifierDisclosure disclosure = new CellularIdentifierDisclosure(
+                NAS_PROTOCOL_MESSAGE_ATTACH_REQUEST, CELLULAR_IDENTIFIER_IMSI, "001001", false);
 
-        android.telephony.CellularIdentifierDisclosure anotherDislcosure =
-                new android.telephony.CellularIdentifierDisclosure(
-                        NAS_PROTOCOL_MESSAGE_ATTACH_REQUEST,
-                        CELLULAR_IDENTIFIER_IMSI,
-                        "001001",
-                        false);
+        CellularIdentifierDisclosure anotherDislcosure = new CellularIdentifierDisclosure(
+                NAS_PROTOCOL_MESSAGE_ATTACH_REQUEST, CELLULAR_IDENTIFIER_IMSI, "001001", false);
         assertEquals(disclosure, anotherDislcosure);
         assertEquals(disclosure.hashCode(), anotherDislcosure.hashCode());
     }
 
     @Test
     public void testNotEqualsAndHash() {
-        android.telephony.CellularIdentifierDisclosure imsiDisclosure =
-                new android.telephony.CellularIdentifierDisclosure(
-                        NAS_PROTOCOL_MESSAGE_ATTACH_REQUEST,
-                        CELLULAR_IDENTIFIER_IMSI,
-                        "001001",
-                        false);
+        CellularIdentifierDisclosure imsiDisclosure = new CellularIdentifierDisclosure(
+                NAS_PROTOCOL_MESSAGE_ATTACH_REQUEST, CELLULAR_IDENTIFIER_IMSI, "001001", false);
 
-        android.telephony.CellularIdentifierDisclosure imeiDisclosure =
-                new android.telephony.CellularIdentifierDisclosure(
-                        NAS_PROTOCOL_MESSAGE_ATTACH_REQUEST,
-                        CELLULAR_IDENTIFIER_IMEI,
-                        "001001",
-                        false);
+        CellularIdentifierDisclosure imeiDisclosure = new CellularIdentifierDisclosure(
+                NAS_PROTOCOL_MESSAGE_ATTACH_REQUEST, CELLULAR_IDENTIFIER_IMEI, "001001", false);
 
         assertNotEquals(imsiDisclosure, imeiDisclosure);
         assertNotEquals(imsiDisclosure.hashCode(), imeiDisclosure.hashCode());
@@ -75,12 +55,8 @@ public class CellularIdentifierDisclosureTest {
 
     @Test
     public void testGetters() {
-        android.telephony.CellularIdentifierDisclosure disclosure =
-                new android.telephony.CellularIdentifierDisclosure(
-                        NAS_PROTOCOL_MESSAGE_ATTACH_REQUEST,
-                        CELLULAR_IDENTIFIER_IMSI,
-                        "001001",
-                        false);
+        CellularIdentifierDisclosure disclosure = new CellularIdentifierDisclosure(
+                NAS_PROTOCOL_MESSAGE_ATTACH_REQUEST, CELLULAR_IDENTIFIER_IMSI, "001001", false);
 
         assertEquals(NAS_PROTOCOL_MESSAGE_ATTACH_REQUEST, disclosure.getNasProtocolMessage());
         assertEquals(CELLULAR_IDENTIFIER_IMSI, disclosure.getCellularIdentifier());
@@ -90,39 +66,15 @@ public class CellularIdentifierDisclosureTest {
 
     @Test
     public void testParcel() {
-        android.telephony.CellularIdentifierDisclosure disclosure =
-                new android.telephony.CellularIdentifierDisclosure(
-                        NAS_PROTOCOL_MESSAGE_ATTACH_REQUEST,
-                        CELLULAR_IDENTIFIER_IMSI,
-                        "001001",
-                        false);
+        CellularIdentifierDisclosure disclosure = new CellularIdentifierDisclosure(
+                NAS_PROTOCOL_MESSAGE_ATTACH_REQUEST, CELLULAR_IDENTIFIER_IMSI, "001001", false);
 
         Parcel p = Parcel.obtain();
         disclosure.writeToParcel(p, 0);
         p.setDataPosition(0);
 
-        android.telephony.CellularIdentifierDisclosure fromParcel =
-                android.telephony.CellularIdentifierDisclosure.CREATOR.createFromParcel(p);
+        CellularIdentifierDisclosure fromParcel =
+                CellularIdentifierDisclosure.CREATOR.createFromParcel(p);
         assertEquals(disclosure, fromParcel);
-    }
-
-    @Test
-    public void testConvertCellularIdentifierDisclosure() {
-        android.hardware.radio.network.CellularIdentifierDisclosure aidlDisclsoure =
-                new android.hardware.radio.network.CellularIdentifierDisclosure();
-        aidlDisclsoure.plmn = "001001";
-        aidlDisclsoure.identifier = NasProtocolMessage.IDENTITY_RESPONSE;
-        aidlDisclsoure.protocolMessage = CellularIdentifier.IMEI;
-        aidlDisclsoure.isEmergency = true;
-
-        android.telephony.CellularIdentifierDisclosure expectedDisclosure =
-                new android.telephony.CellularIdentifierDisclosure(
-                        NAS_PROTOCOL_MESSAGE_IDENTITY_RESPONSE,
-                        CELLULAR_IDENTIFIER_IMEI,
-                        "001001",
-                        true);
-
-        assertEquals(
-                expectedDisclosure, RILUtils.convertCellularIdentifierDisclosure(aidlDisclsoure));
     }
 }
