@@ -5091,59 +5091,6 @@ public class RIL extends BaseCommands implements CommandsInterface {
         });
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public void setCellularIdentifierTransparencyEnabled(boolean enable, Message result) {
-        RadioNetworkProxy networkProxy = getRadioServiceProxy(RadioNetworkProxy.class);
-        if (!canMakeRequest(
-                "setCellularIdentifierDisclosedEnabled",
-                networkProxy,
-                result,
-                RADIO_HAL_VERSION_2_2)) {
-            return;
-        }
-
-        RILRequest rr = obtainRequest(RIL_REQUEST_SET_CELLULAR_IDENTIFIER_DISCLOSED_ENABLED, result,
-                mRILDefaultWorkSource);
-
-        if (RILJ_LOGD) {
-            riljLog(rr.serialString() + "> " + RILUtils.requestToString(rr.mRequest)
-                    + " enable=" + enable);
-        }
-
-        radioServiceInvokeHelper(
-            HAL_SERVICE_NETWORK, rr, "setCellularIdentifierDisclosedEnabled", () -> {
-              networkProxy.setCellularIdentifierTransparencyEnabled(rr.mSerial, enable);
-        });
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void isCellularIdentifierTransparencyEnabled(Message result) {
-        RadioNetworkProxy networkProxy = getRadioServiceProxy(RadioNetworkProxy.class);
-        if (!canMakeRequest(
-                "isCellularIdentifierDisclosedEnabled",
-                networkProxy,
-                result,
-                RADIO_HAL_VERSION_2_2)) {
-            return;
-        }
-
-        RILRequest rr = obtainRequest(RIL_REQUEST_IS_CELLULAR_IDENTIFIER_DISCLOSED_ENABLED, result,
-                mRILDefaultWorkSource);
-
-        if (RILJ_LOGD) {
-            riljLog(rr.serialString() + "> " + RILUtils.requestToString(rr.mRequest));
-        }
-
-        radioServiceInvokeHelper(
-            HAL_SERVICE_NETWORK, rr, "isCellularIdentifierDisclosedEnabled", () -> {
-              networkProxy.isCellularIdentifierTransparencyEnabled(rr.mSerial);
-        });
-    }
-
     //***** Private Methods
     /**
      * This is a helper function to be called when an indication callback is called for any radio
@@ -5321,7 +5268,7 @@ public class RIL extends BaseCommands implements CommandsInterface {
      * @param responseInfo RadioResponseInfo received in the callback
      * @param ret object to be returned to request sender
      */
-    @VisibleForTesting(visibility = VisibleForTesting.Visibility.PROTECTED)
+    @VisibleForTesting
     public void processResponseDone(RILRequest rr, RadioResponseInfo responseInfo, Object ret) {
         processResponseDoneInternal(rr, responseInfo.error, responseInfo.type, ret);
     }
