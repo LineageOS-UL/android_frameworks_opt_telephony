@@ -5094,7 +5094,6 @@ public class RIL extends BaseCommands implements CommandsInterface {
     /**
      * {@inheritDoc}
      */
-    @Override
     public void setCellularIdentifierTransparencyEnabled(boolean enable, Message result) {
         RadioNetworkProxy networkProxy = getRadioServiceProxy(RadioNetworkProxy.class);
         if (!canMakeRequest(
@@ -5122,7 +5121,6 @@ public class RIL extends BaseCommands implements CommandsInterface {
     /**
      * {@inheritDoc}
      */
-    @Override
     public void isCellularIdentifierTransparencyEnabled(Message result) {
         RadioNetworkProxy networkProxy = getRadioServiceProxy(RadioNetworkProxy.class);
         if (!canMakeRequest(
