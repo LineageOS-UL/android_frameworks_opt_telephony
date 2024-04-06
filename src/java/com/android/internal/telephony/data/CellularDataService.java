@@ -167,7 +167,6 @@ public class CellularDataService extends DataService {
                 boolean isRoaming, boolean allowRoaming, int reason, LinkProperties linkProperties,
                 int pduSessionId, NetworkSliceInfo sliceInfo, TrafficDescriptor trafficDescriptor,
                 boolean matchAllRuleAllowed, DataServiceCallback callback) {
-            // TODO: remove isRoaming parameter
             if (DBG) log("setupDataCall " + getSlotIndex());
 
             Message message = null;
@@ -178,9 +177,9 @@ public class CellularDataService extends DataService {
                 mCallbackMap.put(message, callback);
             }
 
-            mPhone.mCi.setupDataCall(accessNetworkType, dataProfile, allowRoaming, reason,
-                    linkProperties, pduSessionId, sliceInfo, trafficDescriptor, matchAllRuleAllowed,
-                    message);
+            mPhone.mCi.setupDataCall(accessNetworkType, dataProfile, isRoaming, allowRoaming,
+                    reason, linkProperties, pduSessionId, sliceInfo, trafficDescriptor,
+                    matchAllRuleAllowed, message);
         }
 
         @Override
@@ -200,8 +199,7 @@ public class CellularDataService extends DataService {
 
         @Override
         public void setInitialAttachApn(DataProfile dataProfile, boolean isRoaming,
-                DataServiceCallback callback) {
-            // TODO: remove isRoaming parameter
+                                        DataServiceCallback callback) {
             if (DBG) log("setInitialAttachApn " + getSlotIndex());
 
             Message message = null;
@@ -212,13 +210,12 @@ public class CellularDataService extends DataService {
                 mCallbackMap.put(message, callback);
             }
 
-            mPhone.mCi.setInitialAttachApn(dataProfile, message);
+            mPhone.mCi.setInitialAttachApn(dataProfile, isRoaming, message);
         }
 
         @Override
         public void setDataProfile(List<DataProfile> dps, boolean isRoaming,
-                DataServiceCallback callback) {
-            // TODO: remove isRoaming parameter
+                                   DataServiceCallback callback) {
             if (DBG) log("setDataProfile " + getSlotIndex());
 
             Message message = null;
@@ -229,7 +226,7 @@ public class CellularDataService extends DataService {
                 mCallbackMap.put(message, callback);
             }
 
-            mPhone.mCi.setDataProfile(dps.toArray(new DataProfile[dps.size()]), message);
+            mPhone.mCi.setDataProfile(dps.toArray(new DataProfile[dps.size()]), isRoaming, message);
         }
 
         @Override

@@ -3126,6 +3126,7 @@ public class GsmCdmaPhone extends Phone {
         mCi.areUiccApplicationsEnabled(obtainMessage(EVENT_GET_UICC_APPS_ENABLEMENT_DONE));
 
         handleNullCipherEnabledChange();
+        startLceAfterRadioIsAvailable();
     }
 
     private void handleRadioOn() {
@@ -4534,6 +4535,7 @@ public class GsmCdmaPhone extends Phone {
         } else {
             loge("deleteAndCreatePhone: newVoiceRadioTech=" + newVoiceRadioTech +
                     " is not CDMA or GSM (error) - aborting!");
+            return;
         }
     }
 
