@@ -516,11 +516,59 @@ public class NetworkResponse extends IRadioNetworkResponse.Stub {
         }
     }
 
+
+    /**
+     * @param responseInfo Response info struct containing response type, serial no. and error
+     */
+    public void setCellularIdentifierTransparencyEnabledResponse(RadioResponseInfo responseInfo) {
+        RadioResponse.responseVoid(HAL_SERVICE_NETWORK, mRil, responseInfo);
+    }
+
+    /**
+     * @param responseInfo Response info struct containing response type, serial no. and error.
+     * @param isEnabled Indicates whether cellular identifier disclosure transparency from the modem
+     *                  is enabled.
+     */
+    public void isCellularIdentifierTransparencyEnabledResponse(RadioResponseInfo responseInfo,
+                                                        boolean isEnabled) {
+        RILRequest rr = mRil.processResponse(HAL_SERVICE_NETWORK, responseInfo);
+
+        if (rr != null) {
+            if (responseInfo.error == RadioError.NONE) {
+                RadioResponse.sendMessageResponse(rr.mResult, isEnabled);
+            }
+            mRil.processResponseDone(rr, responseInfo, isEnabled);
+        }
+    }
+
     /**
      * @param responseInfo Response info struct containing response type, serial no. and error.
      */
     public void setN1ModeEnabledResponse(RadioResponseInfo responseInfo) {
         RadioResponse.responseVoid(HAL_SERVICE_NETWORK, mRil, responseInfo);
+    }
+
+    /**
+     * @param responseInfo Response info struct containing response type, serial no. and error
+     */
+    public void setSecurityAlgorithmsUpdatedEnabledResponse(RadioResponseInfo responseInfo) {
+        RadioResponse.responseVoid(HAL_SERVICE_NETWORK, mRil, responseInfo);
+    }
+
+    /**
+     * @param responseInfo Response info struct containing response type, serial no. and error.
+     * @param isEnabled Indicates whether security algorithm updates from the modem are enabled.
+     */
+    public void isSecurityAlgorithmsUpdatedEnabledResponse(RadioResponseInfo responseInfo,
+                                                        boolean isEnabled) {
+        RILRequest rr = mRil.processResponse(HAL_SERVICE_NETWORK, responseInfo);
+
+        if (rr != null) {
+            if (responseInfo.error == RadioError.NONE) {
+                RadioResponse.sendMessageResponse(rr.mResult, isEnabled);
+            }
+            mRil.processResponseDone(rr, responseInfo, isEnabled);
+        }
     }
 
     @Override

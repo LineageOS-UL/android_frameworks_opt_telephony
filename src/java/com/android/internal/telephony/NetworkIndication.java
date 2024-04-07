@@ -422,6 +422,24 @@ public class NetworkIndication extends IRadioNetworkIndication.Stub {
                 new AsyncResult(null, response, null));
     }
 
+    /**
+     * Cellular identifier disclosure events
+     * @param indicationType Type of radio indication
+     * @param identifierDisclsoure the result of the Emergency Network Scan
+     */
+    public void cellularIdentifierDisclosed(int indicationType,
+            android.hardware.radio.network.CellularIdentifierDisclosure identifierDisclsoure) {
+    }
+
+    /**
+     * Security algorithm update events
+     * @param indicationType Type of radio indication
+     * @param securityAlgorithmUpdate details of what changed
+     */
+    public void securityAlgorithmsUpdated(int indicationType,
+            android.hardware.radio.network.SecurityAlgorithmUpdate securityAlgorithmUpdate) {
+    }
+
     @Override
     public String getInterfaceHash() {
         return IRadioNetworkIndication.HASH;

@@ -378,7 +378,7 @@ public abstract class Phone extends Handler implements PhoneInternalInterface {
 
     private static final int DEFAULT_REPORT_INTERVAL_MS = 200;
     private static final boolean LCE_PULL_MODE = true;
-    private int mLceStatus = RILConstants.LCE_NOT_AVAILABLE;
+    private int mLceStatus = 36;
     protected TelephonyComponentFactory mTelephonyComponentFactory;
 
     private int mPreferredUsageSetting = SubscriptionManager.USAGE_SETTING_UNKNOWN;
