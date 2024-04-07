@@ -61,6 +61,7 @@ public class RadioConfig extends Handler {
     static final int EVENT_HIDL_SERVICE_DEAD = 1;
     static final int EVENT_AIDL_SERVICE_DEAD = 2;
     static final HalVersion RADIO_CONFIG_HAL_VERSION_UNKNOWN = new HalVersion(-1, -1);
+    static final HalVersion RADIO_CONFIG_HAL_VERSION_1_0 = new HalVersion(1, 0);
     static final HalVersion RADIO_CONFIG_HAL_VERSION_1_1 = new HalVersion(1, 1);
     static final HalVersion RADIO_CONFIG_HAL_VERSION_1_3 = new HalVersion(1, 3);
     static final HalVersion RADIO_CONFIG_HAL_VERSION_2_0 = new HalVersion(2, 0);
@@ -316,7 +317,13 @@ public class RadioConfig extends Handler {
         }
 
         if (mRadioConfigProxy.isEmpty()) {
-            loge("IRadioConfig <1.1 is no longer supported.");
+            try {
+                mRadioConfigProxy.setHidl(RADIO_CONFIG_HAL_VERSION_1_0,
+                        android.hardware.radio.config.V1_0.IRadioConfig.getService(true));
+            } catch (RemoteException | NoSuchElementException e) {
+                mRadioConfigProxy.clear();
+                loge("getHidlRadioConfigProxy1_0: RadioConfigProxy getService | linkToDeath: " + e);
+            }
         }
 
         if (!mRadioConfigProxy.isEmpty()) {
