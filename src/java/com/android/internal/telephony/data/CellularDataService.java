@@ -181,9 +181,9 @@ public class CellularDataService extends DataService {
                 mCallbackMap.put(message, callback);
             }
 
-            mPhone.mCi.setupDataCall(accessNetworkType, dataProfile, allowRoaming, reason,
-                    linkProperties, pduSessionId, sliceInfo, trafficDescriptor, matchAllRuleAllowed,
-                    message);
+            mPhone.mCi.setupDataCall(accessNetworkType, dataProfile, isRoaming, allowRoaming,
+                    reason, linkProperties, pduSessionId, sliceInfo, trafficDescriptor,
+                    matchAllRuleAllowed, message);
         }
 
         @Override
@@ -215,7 +215,7 @@ public class CellularDataService extends DataService {
                 mCallbackMap.put(message, callback);
             }
 
-            mPhone.mCi.setInitialAttachApn(dataProfile, message);
+            mPhone.mCi.setInitialAttachApn(dataProfile, isRoaming, message);
         }
 
         @Override
@@ -232,7 +232,7 @@ public class CellularDataService extends DataService {
                 mCallbackMap.put(message, callback);
             }
 
-            mPhone.mCi.setDataProfile(dps.toArray(new DataProfile[0]), message);
+            mPhone.mCi.setDataProfile(dps.toArray(new DataProfile[0]), isRoaming, message);
         }
 
         @Override

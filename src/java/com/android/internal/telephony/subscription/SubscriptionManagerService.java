@@ -86,6 +86,7 @@ import android.util.Base64;
 import android.util.EventLog;
 import android.util.IndentingPrintWriter;
 import android.util.LocalLog;
+import android.util.Log;
 
 import com.android.internal.R;
 import com.android.internal.annotations.VisibleForTesting;
@@ -1440,11 +1441,11 @@ public class SubscriptionManagerService extends ISub.Stub {
         int simState = mSimState[phoneId];
         log("updateSubscription: phoneId=" + phoneId + ", simState="
                 + TelephonyManager.simStateToString(simState));
-        for (UiccSlot slot : mUiccController.getUiccSlots()) {
-            if (slot != null) {
-                log("  " + slot);
-            }
-        }
+//        for (UiccSlot slot : mUiccController.getUiccSlots()) {
+//            if (slot != null) {
+//                log("  " + slot);
+//            }
+//        }
 
         if (simState == TelephonyManager.SIM_STATE_ABSENT) {
             SatelliteController satelliteController = SatelliteController.getInstance();
@@ -3268,7 +3269,22 @@ public class SubscriptionManagerService extends ISub.Stub {
 
                 TelecomManager telecomManager = mContext.getSystemService(TelecomManager.class);
                 if (telecomManager != null) {
-                    telecomManager.setUserSelectedOutgoingPhoneAccount(newHandle);
+                    PhoneAccountHandle currentHandle = telecomManager.getUserSelectedOutgoingPhoneAccount();
+                    log("[setDefaultVoiceSubId] current phoneAccountHandle=" + currentHandle);
+
+                    String currentPackageName =
+                        currentHandle == null ? null : currentHandle.getComponentName().getPackageName();
+                    boolean currentIsSim = "com.android.phone".equals(currentPackageName);
+                    // Do not override user selected outgoing calling account
+                    // if the user has selected a third-party app as default
+                    boolean shouldKeepOutgoingAccount = currentHandle != null && !currentIsSim;
+
+                    if (!shouldKeepOutgoingAccount) {
+                        telecomManager.setUserSelectedOutgoingPhoneAccount(newHandle);
+                        log("[setDefaultVoiceSubId] change to phoneAccountHandle=" + newHandle);
+                    } else {
+                        log("[setDefaultVoiceSubId] default phoneAccountHandle not changed.");
+                    }
                 }
 
                 updateDefaultSubId();

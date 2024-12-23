@@ -610,7 +610,7 @@ public class UiccController extends Handler {
                     if (phoneId == 0) {
                         if (DBG) {
                             log("Received EVENT_RADIO_AVAILABLE/EVENT_RADIO_ON for phoneId 0, "
-                                    + "calling getSimSlotsStatus");
+                                    + "calling getIccSlotsStatus");
                         }
                         mRadioConfig.getSimSlotsStatus(obtainMessage(EVENT_GET_SLOT_STATUS_DONE,
                                 phoneId));
@@ -1059,6 +1059,9 @@ public class UiccController extends Handler {
 
         IccCardStatus status = (IccCardStatus)ar.result;
 
+        IccSlotPortMapping slotPortMapping = new IccSlotPortMapping();
+        status.mSlotPortMapping = slotPortMapping;
+
         logWithLocalLog("onGetIccCardStatusDone: phoneId-" + index + " IccCardStatus: " + status);
 
         int slotId = status.mSlotPortMapping.mPhysicalSlotIndex;
@@ -1067,6 +1070,11 @@ public class UiccController extends Handler {
             slotId = index;
         }
 
+        if (!mCis[0].supportsEid()) {
+            // we will never get EID from the HAL, so set mDefaultEuiccCardId to UNSUPPORTED_CARD_ID
+            if (DBG) log("eid is not supported");
+            mDefaultEuiccCardId = UNSUPPORTED_CARD_ID;
+        }
         mPhoneIdToSlotId[index] = slotId;
 
         if (VDBG) logPhoneIdToSlotIdMapping();

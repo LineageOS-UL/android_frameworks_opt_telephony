@@ -240,18 +240,28 @@ public class RadioIndication extends IRadioIndication.Stub {
     }
 
     public void currentSignalStrength(int indicationType,
-            android.hardware.radio.V1_0.SignalStrength signalStrength) {
-        mRil.unsljLogMore(RIL_UNSOL_SIGNAL_STRENGTH, "unsupported on IRadio < 1.4");
+                                      android.hardware.radio.V1_0.SignalStrength signalStrength) {
+        mRil.processIndication(HAL_SERVICE_RADIO, indicationType);
+
+        SignalStrength ssInitial = RILUtils.convertHalSignalStrength(signalStrength);
+
+        SignalStrength ss = mRil.fixupSignalStrength10(ssInitial);
+        // Note this is set to "verbose" because it happens frequently
+        if (mRil.isLogvOrTrace()) mRil.unsljLogvRet(RIL_UNSOL_SIGNAL_STRENGTH, ss);
+
+        if (mRil.mSignalStrengthRegistrant != null) {
+            mRil.mSignalStrengthRegistrant.notifyRegistrant(new AsyncResult (null, ss, null));
+        }
     }
 
     /**
      * Indicates current link capacity estimate.
      */
     public void currentLinkCapacityEstimate(int indicationType,
-            android.hardware.radio.V1_2.LinkCapacityEstimate lce) {
+                                            android.hardware.radio.V1_2.LinkCapacityEstimate lce) {
         mRil.processIndication(HAL_SERVICE_RADIO, indicationType);
 
-        List<LinkCapacityEstimate> response = RILUtils.convertHalLinkCapacityEstimate(lce);
+        List<LinkCapacityEstimate> response = RILUtils.convertHalLceData(lce);
 
         if (mRil.isLogOrTrace()) mRil.unsljLogRet(RIL_UNSOL_LCEDATA_RECV, response);
 
@@ -267,7 +277,7 @@ public class RadioIndication extends IRadioIndication.Stub {
             android.hardware.radio.V1_6.LinkCapacityEstimate lce) {
         mRil.processIndication(HAL_SERVICE_RADIO, indicationType);
 
-        List<LinkCapacityEstimate> response = RILUtils.convertHalLinkCapacityEstimate(lce);
+        List<LinkCapacityEstimate> response = RILUtils.convertHalLceData(lce);
 
         if (mRil.isLogOrTrace()) mRil.unsljLogRet(RIL_UNSOL_LCEDATA_RECV, response);
 
@@ -280,8 +290,16 @@ public class RadioIndication extends IRadioIndication.Stub {
      * Indicates the current signal strength of the camped or primary serving cell.
      */
     public void currentSignalStrength_1_2(int indicationType,
-            android.hardware.radio.V1_2.SignalStrength signalStrength) {
-        mRil.unsljLogMore(RIL_UNSOL_SIGNAL_STRENGTH, "unsupported on IRadio < 1.4");
+                                      android.hardware.radio.V1_2.SignalStrength signalStrength) {
+        mRil.processIndication(HAL_SERVICE_RADIO, indicationType);
+
+        SignalStrength ss = RILUtils.convertHalSignalStrength(signalStrength);
+        // Note this is set to "verbose" because it happens frequently
+        if (mRil.isLogvOrTrace()) mRil.unsljLogvRet(RIL_UNSOL_SIGNAL_STRENGTH, ss);
+
+        if (mRil.mSignalStrengthRegistrant != null) {
+            mRil.mSignalStrengthRegistrant.notifyRegistrant(new AsyncResult(null, ss, null));
+        }
     }
 
     /**
@@ -341,7 +359,8 @@ public class RadioIndication extends IRadioIndication.Stub {
      */
     public void currentPhysicalChannelConfigs(int indicationType,
             ArrayList<android.hardware.radio.V1_2.PhysicalChannelConfig> configs) {
-        mRil.unsljLogMore(RIL_UNSOL_PHYSICAL_CHANNEL_CONFIG, "unsupported on IRadio < 1.4");
+        mRil.processIndication(HAL_SERVICE_RADIO, indicationType);
+        physicalChannelConfigsIndication(configs);
     }
 
     /**
@@ -374,7 +393,7 @@ public class RadioIndication extends IRadioIndication.Stub {
     /** Indicates current data call list. */
     public void dataCallListChanged(int indicationType,
             ArrayList<android.hardware.radio.V1_0.SetupDataCallResult> dcList) {
-        mRil.unsljLogMore(RIL_UNSOL_DATA_CALL_LIST_CHANGED, "unsupported on IRadio < 1.4");
+        responseDataCallListChanged(indicationType, dcList);
     }
 
     /** Indicates current data call list with radio HAL 1.4. */
@@ -784,13 +803,15 @@ public class RadioIndication extends IRadioIndication.Stub {
     /** Get unsolicited message for cellInfoList */
     public void cellInfoList(int indicationType,
             ArrayList<android.hardware.radio.V1_0.CellInfo> records) {
-        mRil.unsljLogMore(RIL_UNSOL_CELL_INFO_LIST, "unsupported on IRadio < 1.4");
+        mRil.processIndication(HAL_SERVICE_RADIO, indicationType);
+        responseCellInfoList(records);
     }
 
     /** Get unsolicited message for cellInfoList using HAL V1_2 */
     public void cellInfoList_1_2(int indicationType,
             ArrayList<android.hardware.radio.V1_2.CellInfo> records) {
-        mRil.unsljLogMore(RIL_UNSOL_CELL_INFO_LIST, "unsupported on IRadio < 1.4");
+        mRil.processIndication(HAL_SERVICE_RADIO, indicationType);
+        responseCellInfoList(records);
     }
 
     /** Get unsolicited message for cellInfoList using HAL V1_4 */
@@ -833,20 +854,20 @@ public class RadioIndication extends IRadioIndication.Stub {
 
     /** Incremental network scan results */
     public void networkScanResult(int indicationType,
-            android.hardware.radio.V1_1.NetworkScanResult result) {
-        mRil.unsljLogMore(RIL_UNSOL_NETWORK_SCAN_RESULT, "unsupported on IRadio < 1.4");
+                                  android.hardware.radio.V1_1.NetworkScanResult result) {
+        responseNetworkScan(indicationType, result);
     }
 
     /** Incremental network scan results with HAL V1_2 */
     public void networkScanResult_1_2(int indicationType,
-            android.hardware.radio.V1_2.NetworkScanResult result) {
-        mRil.unsljLogMore(RIL_UNSOL_NETWORK_SCAN_RESULT, "unsupported on IRadio < 1.4");
+                                      android.hardware.radio.V1_2.NetworkScanResult result) {
+        responseNetworkScan_1_2(indicationType, result);
     }
 
     /** Incremental network scan results with HAL V1_4 */
     public void networkScanResult_1_4(int indicationType,
-            android.hardware.radio.V1_4.NetworkScanResult result) {
-        responseNetworkScan(indicationType, result);
+                                      android.hardware.radio.V1_4.NetworkScanResult result) {
+        responseNetworkScan_1_4(indicationType, result);
     }
 
     /** Incremental network scan results with HAL V1_5 */
@@ -897,7 +918,8 @@ public class RadioIndication extends IRadioIndication.Stub {
                 new AsyncResult (null, response, null));
     }
 
-    public void hardwareConfigChanged(int indicationType,
+    public void hardwareConfigChanged(
+            int indicationType,
             ArrayList<android.hardware.radio.V1_0.HardwareConfig> configs) {
         mRil.processIndication(HAL_SERVICE_RADIO, indicationType);
 
@@ -910,7 +932,7 @@ public class RadioIndication extends IRadioIndication.Stub {
     }
 
     public void radioCapabilityIndication(int indicationType,
-            android.hardware.radio.V1_0.RadioCapability rc) {
+                                          android.hardware.radio.V1_0.RadioCapability rc) {
         mRil.processIndication(HAL_SERVICE_RADIO, indicationType);
 
         RadioCapability response = RILUtils.convertHalRadioCapability(rc, mRil);
@@ -980,7 +1002,15 @@ public class RadioIndication extends IRadioIndication.Stub {
     }
 
     public void lceData(int indicationType, LceDataInfo lce) {
-        mRil.unsljLogMore(RIL_UNSOL_PHYSICAL_CHANNEL_CONFIG, "unsupported on IRadio < 1.4");
+        mRil.processIndication(HAL_SERVICE_RADIO, indicationType);
+
+        List<LinkCapacityEstimate> response = RILUtils.convertHalLceData(lce);
+
+        if (mRil.isLogOrTrace()) mRil.unsljLogRet(RIL_UNSOL_LCEDATA_RECV, response);
+
+        if (mRil.mLceInfoRegistrants != null) {
+            mRil.mLceInfoRegistrants.notifyRegistrants(new AsyncResult(null, response, null));
+        }
     }
 
     public void pcoData(int indicationType, PcoDataInfo pco) {
@@ -1168,7 +1198,16 @@ public class RadioIndication extends IRadioIndication.Stub {
         List<PhysicalChannelConfig> response = new ArrayList<>(configs.size());
         try {
             for (Object obj : configs) {
-                if (obj instanceof android.hardware.radio.V1_4.PhysicalChannelConfig) {
+                if (obj instanceof android.hardware.radio.V1_2.PhysicalChannelConfig) {
+                    android.hardware.radio.V1_2.PhysicalChannelConfig config =
+                            (android.hardware.radio.V1_2.PhysicalChannelConfig) obj;
+
+                    response.add(new PhysicalChannelConfig.Builder()
+                            .setCellConnectionStatus(RILUtils.convertHalCellConnectionStatus(
+                                    config.status))
+                            .setCellBandwidthDownlinkKhz(config.cellBandwidthDownlink)
+                            .build());
+                } else if (obj instanceof android.hardware.radio.V1_4.PhysicalChannelConfig) {
                     android.hardware.radio.V1_4.PhysicalChannelConfig config =
                             (android.hardware.radio.V1_4.PhysicalChannelConfig) obj;
                     PhysicalChannelConfig.Builder builder = new PhysicalChannelConfig.Builder();
@@ -1242,6 +1281,28 @@ public class RadioIndication extends IRadioIndication.Stub {
     }
 
     private void responseNetworkScan(int indicationType,
+            android.hardware.radio.V1_1.NetworkScanResult result) {
+        mRil.processIndication(HAL_SERVICE_RADIO, indicationType);
+
+        ArrayList<CellInfo> cellInfos =
+                RILUtils.convertHalCellInfoList(new ArrayList<>(result.networkInfos));
+        NetworkScanResult nsr = new NetworkScanResult(result.status, result.error, cellInfos);
+        if (mRil.isLogOrTrace()) mRil.unsljLogRet(RIL_UNSOL_NETWORK_SCAN_RESULT, nsr);
+        mRil.mRilNetworkScanResultRegistrants.notifyRegistrants(new AsyncResult(null, nsr, null));
+    }
+
+    private void responseNetworkScan_1_2(int indicationType,
+            android.hardware.radio.V1_2.NetworkScanResult result) {
+        mRil.processIndication(HAL_SERVICE_RADIO, indicationType);
+
+        ArrayList<CellInfo> cellInfos =
+                RILUtils.convertHalCellInfoList(new ArrayList<>(result.networkInfos));
+        NetworkScanResult nsr = new NetworkScanResult(result.status, result.error, cellInfos);
+        if (mRil.isLogOrTrace()) mRil.unsljLogRet(RIL_UNSOL_NETWORK_SCAN_RESULT, nsr);
+        mRil.mRilNetworkScanResultRegistrants.notifyRegistrants(new AsyncResult(null, nsr, null));
+    }
+
+    private void responseNetworkScan_1_4(int indicationType,
             android.hardware.radio.V1_4.NetworkScanResult result) {
         mRil.processIndication(HAL_SERVICE_RADIO, indicationType);
 
