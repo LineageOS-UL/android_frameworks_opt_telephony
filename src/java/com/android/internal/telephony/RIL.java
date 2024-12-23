@@ -4391,9 +4391,9 @@ public class RIL extends BaseCommands implements CommandsInterface {
             riljLog(rr.serialString() + "> " + RILUtils.requestToString(rr.mRequest)
                     + " params: " + carrierRestrictionRules);
         }
+
         radioServiceInvokeHelper(HAL_SERVICE_SIM, rr, "setAllowedCarriers", () -> {
-            simProxy.setAllowedCarriers(rr.mSerial, carrierRestrictionRules,
-                    getHalVersion(HAL_SERVICE_SIM));
+            simProxy.setAllowedCarriers(rr.mSerial, carrierRestrictionRules);
         });
     }
 
